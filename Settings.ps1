@@ -1,7 +1,12 @@
 # Configure the variables below that will be used in the script
-$HAToken = "<Insert token>" # Example: eyJ0eXAiOiJKV1...
-$UserName = "<UserName>" # When not sure, open a command prompt and type: echo %USERNAME%
-$HAUrl = "<HAUrl>" # Example: https://yourha.duckdns.org
+
+# Set MQTT Server setting
+$mqttServerIP = "192.168.1.2"
+$mqttUser = "mqttuser"
+$mqttPass = "mqttpass"
+
+# Personal information
+$User = "sbp3"
 
 # Set language variables below
 $lgAvailable = "Available"
@@ -10,7 +15,7 @@ $lgOnThePhone = "On the phone"
 $lgAway = "Away"
 $lgBeRightBack = "Be right back"
 $lgDoNotDisturb = "Do not disturb"
-$lgPresenting = "Presenting"
+$lgPresenting = "Presenting" 
 $lgFocusing = "Focusing"
 $lgInAMeeting = "In a meeting"
 $lgOffline = "Offline"

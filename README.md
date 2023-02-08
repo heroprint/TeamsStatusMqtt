@@ -13,6 +13,8 @@ We're working a lot at our home office these days. Several people already found 
 
 Microsoft provides the status of your account that is used in Teams via the Graph API. To access the Graph API, your organization needs to grant consent for the organization so everybody can read their Teams status. Since my organization didn't want to grant consent, I needed to find a workaround, which I found in monitoring the Teams client logfile for certain changes.
 
+
+
 This script makes use of two sensors that are created in Home Assistant up front:
 * sensor.teams_status
 * sensor.teams_activity
