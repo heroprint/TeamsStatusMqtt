@@ -1,3 +1,12 @@
+# ACTUALLY WORKING FORK, DONT USE IT YET! THANKS
+Hello Guys, 
+i will code here a Teams Status Notifier that will subscribe via MQTT to any home automation broker. 
+in my case, i am using the iobroker. i will remove in the fork from the original repo all HA functions.
+
+The below instruction is from the original, but i will update in future. 
+
+Cheers Chris
+
 # Introduction
 We're working a lot at our home office these days. Several people already found inventive solutions to make working in the home office more comfortable. One of these ways is to automate activities in your home automatation system based on your status on Microsoft Teams.
 
