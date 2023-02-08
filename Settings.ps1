@@ -1,12 +1,12 @@
 # Configure the variables below that will be used in the script
 
 # Set MQTT Server setting
-$mqttServerIP = "192.168.1.2"
+$mqttServerIP = "192.168.1.1"
 $mqttUser = "mqttuser"
 $mqttPass = "mqttpass"
 
 # Personal information
-$User = "sbp3"
+$User = "user"
 
 # Set language variables below
 $lgAvailable = "Available"

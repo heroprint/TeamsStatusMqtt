@@ -20,7 +20,8 @@
 .EXAMPLE
     .\Get-TeamsStatus.ps1 -SetStatus "Offline"
 #>
-Add-Type -Path "C:\Scripts\lib\M2Mqtt.Net.dll"
+
+Add-Type -Path ($PSScriptRoot + "\M2Mqtt.Net.dll")
 
 # Import Settings
 .($PSScriptRoot + "\Settings.ps1")
@@ -35,6 +36,9 @@ function MQTTMsgSend(){
         $MqttClient.Disconnect()
     }
 }
+# init 
+$Status = "";
+$Activity = "";
 
 # Start monitoring the Teams logfile when no parameter is used to run the script
 Get-Content -Path $env:APPDATA"\Microsoft\Teams\logs.txt" -Tail 1000 -ReadCount 0 -Wait | % {
