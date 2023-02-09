@@ -1,70 +1,57 @@
-# ACTUALLY WORKING FORK, DONT USE IT YET! THANKS
+# TeamsStatusMonitor with MQTT 
+Works with:
+* ioBroker
+* openHab
+* Home Assistant
 
-Hello Guys, 
-i will code here a Teams Status Notifier that will subscribe via MQTT to any home automation broker. 
-in my case, i am using the iobroker. i will remove in the fork from the original repo all HA functions.
+## Introduction
+This PowerShell script/service uses the local Teams' log file to track the status and activity of the logged in Teams user. Microsoft provides the status of your account via the Graph API, however to access the Graph API, your organization needs to grant consent for the organization so everybody can read their Teams status. This solution is great for anyone who's organization does not allow this.
 
-The below instruction is from the original, but i will update in future. 
+This script makes use of three sensors that are published over mqtt to any home automation broker:
+* teams_status
+* teams_activity
+* teams_camstatus
 
-Cheers Chris
-
-# Introduction
-We're working a lot at our home office these days. Several people already found inventive solutions to make working in the home office more comfortable. One of these ways is to automate activities in your home automatation system based on your status on Microsoft Teams.
-
-Microsoft provides the status of your account that is used in Teams via the Graph API. To access the Graph API, your organization needs to grant consent for the organization so everybody can read their Teams status. Since my organization didn't want to grant consent, I needed to find a workaround, which I found in monitoring the Teams client logfile for certain changes.
-
+teams_status displays that availability status of your Teams client based on the icon overlay in the taskbar on Windows. 
+teams_activity shows if you are in a call or not based on the App updates deamon, which is paused as soon as you join a call.
+teams_camstatus shows if your camera is activ in a call
 
 
-This script makes use of two sensors that are created in Home Assistant up front:
-* sensor.teams_status
-* sensor.teams_activity
+## Installation
+* Download the files from this repository and save them to any folder (we will use C:\Scripts in this example)
+* Configure the script in settings.ps1, open with Notepad++ or Win PowerShell ISE
+* Start a elevated (Admin) PowerShell prompt, and execute the following scripts
+  ```powershell
+  Unblock-File C:\Scripts\install.ps1
+  C:\Scripts\install.ps1
+  ```
+* Execute the file as requested in the Install.ps1 output
+* After completing the steps above, start your Teams client and verify if the status and activity is updated as expected.
+  
+## Uninstallation
+You can uninstall the service by executing the `uninstall.ps1` script.
+Using the previous path as an example, in PowerShell you would run:
+  ```powershell
+  C:\Scripts\uninstall.ps1
+  ```
+Note: This will not stop the script if it is currently executing, if you would like to do so just kill it (powershell.exe).
+If you get an error that the file "is not is not digitally signed", simply run the following before executing the uninstaller again:
+  ```powershell
+  Unblock-File C:\Scripts\uninstall.ps1
+  ```
 
-sensor.teams_status displays that availability status of your Teams client based on the icon overlay in the taskbar on Windows. sensor.teams_activity shows if you are in a call or not based on the App updates deamon, which is paused as soon as you join a call.
+## Contribution
+Pull Requests are welcomed!
 
-# Important
-This solution is created to work with Home Assistant. It will work with any home automation platform that provides an API, but you probably need to change the PowerShell code.
+## Credit
+Original work by EBOOZ, which can be found here: https://github.com/EBOOZ/TeamsStatus.
+Second inspiration work from AntoineGS, https://github.com/AntoineGS/TeamsStatusV2/.
+But both works are only for Home Assistant, but i need for ioBroker a MQTT Interface. 
 
-# Requirements
-* Create the three Teams sensors in the Home Assistant configuration.yaml file
-```yaml
-input_text:
-  teams_status:
-    name: Microsoft Teams status
-    icon: mdi:microsoft-teams
-  teams_activity:
-    name: Microsoft Teams activity
-    icon: mdi:phone-off
+## Upcoming
+Fixes and Impovments with error handling.
+And Languages... please help me...
 
-sensor:
-  - platform: template
-    sensors:
-      teams_status: 
-        friendly_name: "Microsoft Teams status"
-        value_template: "{{states('input_text.teams_status')}}"
-        icon_template: "{{state_attr('input_text.teams_status','icon')}}"
-        unique_id: sensor.teams_status
-      teams_activity:
-        friendly_name: "Microsoft Teams activity"
-        value_template: "{{states('input_text.teams_activity')}}"
-        unique_id: sensor.teams_activity
 
-```
-* Generate a Long-lived access token ([see HA documentation](https://developers.home-assistant.io/docs/auth_api/#long-lived-access-token))
-* Copy and temporarily save the token somewhere you can find it later
-* Restart Home Assistant to have the new sensors added
-* Download the files from this repository and save them to C:\Scripts
-* Edit the Settings.ps1 file and:
-  * Replace `<Insert token>` with the token you generated
-  * Replace `<UserName>` with the username that is logged in to Teams and you want to monitor
-  * Replace `<HA URL>` with the URL to your Home Assistant server
-  * Adjust the language settings to your preferences
-* Start a elevated PowerShell prompt, browse to C:\Scripts and run the following command:
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
-Unblock-File .\Settings.ps1
-Unblock-File .\Get-TeamsStatus.ps1
-Start-Process -FilePath .\nssm.exe -ArgumentList 'install "Microsoft Teams Status Monitor" "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" "-command "& { . C:\Scripts\Get-TeamsStatus.ps1 }"" ' -NoNewWindow -Wait
-Start-Service -Name "Microsoft Teams Status Monitor"
-```
-
-After completing the steps below, start your Teams client and verify if the status and activity is updated as expected.
+# Have fun with the script :)
+Chris
