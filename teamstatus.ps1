@@ -67,11 +67,6 @@ Get-Content -Path "$appDataFolder\Microsoft\Teams\logs.txt" -Encoding Utf8 -Tail
         'name: desktop_call_state_change_send, isOngoing',`
         'Attempting to play audio for notification type 1' | Select-Object -Last 1
 
-    # Camstatus
-    $CamStatus = $_ | Select-String -Pattern `
-        'desktopClient createNativeRenderingResources',`
-        'desktopClient destroyNativeRenderingResources' | Select-Object -Last 1
-
     # Get Teams application process
     $TeamsProcess = Get-Process -Name Teams -ErrorAction SilentlyContinue
 
@@ -95,6 +90,7 @@ Get-Content -Path "$appDataFolder\Microsoft\Teams\logs.txt" -Encoding Utf8 -Tail
             $TeamsActivity -like "*SfB:TeamsNoCall*" -or `
             $TeamsActivity -like "*name: desktop_call_state_change_send, isOngoing: false*") {
             $Activity = $taNotInACall
+            $Cam = $csCameraOff
         }
         ElseIf ($TeamsActivity -like "*Pausing daemon App updates*" -or `
             $TeamsActivity -like "*SfB:TeamsActiveCall*" -or `
@@ -104,15 +100,6 @@ Get-Content -Path "$appDataFolder\Microsoft\Teams\logs.txt" -Encoding Utf8 -Tail
         ElseIf ($TeamsActivity -like "*Attempting to play audio for notification type 1*") {
             $Activity = $taIncomingCall
         }
-       
-        # Check Camera
-        If($CamStatus -eq $null){ }
-        ElseIf ($CamStatus -like "*desktopClient createNativeRenderingResources*") {
-            $Cam = $csCameraOn
-        }
-        ElseIf ($CamStatus -like "*desktopClient destroyNativeRenderingResources*") {
-            $Cam = $csCameraOff
-        }
     }
     # Set status to Offline when the Teams application is not running
     Else {
@@ -120,6 +107,25 @@ Get-Content -Path "$appDataFolder\Microsoft\Teams\logs.txt" -Encoding Utf8 -Tail
             $Activity = $taNotInACall
             $Cam = $csCameraOff
     }
+
+    # Webcam support (sensor.teams_cam_status)
+    # While in a call, we poke the registry for cam status (maybe too often), but I could not find a log entry to use as a trigger 
+    # to know when to check the camera status so it might be hit or miss. 
+    # When leaving a call it maybe not trigger as something non-camera related needs to get logged to trigger the check.
+    If($Activity -eq $taInACall -or $Cam -eq $csCameraOn) {
+        $registryPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam\NonPackaged\" + 
+                        "C:#Users#$userName#AppData#Local#Microsoft#Teams#current#Teams.exe"
+
+        $webcam = Get-ItemProperty -Path $registryPath -Name LastUsedTimeStop | select LastUsedTimeStop
+
+        If ($webcam.LastUsedTimeStop -eq 0) {
+	        $Cam = $csCameraOn
+        }
+        Else {
+	        $Cam = $csCameraOff
+        }
+    }
+
 
     # Call MQTT API to set the status and activity 
     If ($CurrentStatus -ne $Status -and $Status -ne $null) {
