@@ -1,4 +1,4 @@
-﻿Add-Type -Path (Join-Path $PSScriptRoot "lib\M2Mqtt.Net.dll")
+﻿Add-Type -Path (Join-Path $PSScriptRoot "M2Mqtt.Net.dll")
 
 $MqttClient = [uPLibrary.Networking.M2Mqtt.MqttClient]($mqttServerIP)
 
