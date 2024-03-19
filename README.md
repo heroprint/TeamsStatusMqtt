@@ -4,6 +4,9 @@ Works with:
 * openHab
 * Home Assistant
 
+> [!NOTE]
+> This solution only works for the legacy version of Microsoft Teams. The new version does not contain a logs.txt file which can be read by the script. Therefor this repository is not maintained anymore.
+
 ## Introduction
 This PowerShell script/service uses the local Teams' log file to track the status and activity of the logged in Teams user. Microsoft provides the status of your account via the Graph API, however to access the Graph API, your organization needs to grant consent for the organization so everybody can read their Teams status. This solution is great for anyone who's organization does not allow this.
 
